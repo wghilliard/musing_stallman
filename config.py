@@ -1,7 +1,7 @@
 # TODO get config from env variable
 
 MONGODB_HOST = 'localhost'
-MONGODB_PORT = int(27017)
+MONGODB_PORT = 27017
 MONGODB_DB = 'musing_stallman'
 
 CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost:5672//'
