@@ -28,9 +28,9 @@ def hello():
 
     # {
     #     "api_key": "f073651b-40c4-4dd5-8172-57a4829f99a3",
-    #     "name": "Grayson Hilliard",
-    #     "username": "cats",
-    #     "email": "grsn.hilliard@gmail.com"
+    #     "name": "Bird Person",
+    #     "username": "bperson",
+    #     "email": "bird.person@squanch.com"
     # }
 
     try:
