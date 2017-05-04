@@ -1,15 +1,26 @@
 import json
 from web_app import app
 from web_app.utils import check_token
-from flask import request, make_response
+from flask import request, make_response, redirect, url_for, render_template, flash
 
 from helper.tasks import add_user, make_data_dirs
+from web_app.forms import RegistrationForm
+from web_app.models import User
 
 
-@app.route('/')
-def meow():
-    return 'Hello, World!'
+@app.route('/', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(username=form.username.data, email=form.email.data,
+                    full_name=form.full_name.data)
+        user.save()
+        return redirect(url_for('thanks'))
+    return render_template('register.html', form=form)
 
+@app.route('/thanks')
+def thanks():
+    return "Thanks, maybe this will look pretty"
 
 @app.route('/api/hello', methods=['POST'])
 def hello():
@@ -24,6 +35,9 @@ def hello():
     :return: 200, regardless
     """
 
+    print(request.get_json())
+
+    # if payload is not None:
     payload = request.get_json()
 
     # {

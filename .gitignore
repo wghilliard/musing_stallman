@@ -1,3 +1,5 @@
+server.*
+secret_key.py
 secrets.py
 .idea/
 __pycache__/
