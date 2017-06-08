@@ -22,12 +22,12 @@ is bad (which it is)
 3. Build the Docker container.
 
     ```
-    docker build . -t $MY_CONTAINER_NAME
+    docker-compose build
     ```
 
 
-4. Run the container.
+4. Run the containers.
 
     ```
-    docker run -d -e MONGO_HOST="192.168.1.1" -e LDAP_HOST="192.168.1.1" -v /data:/data -v /scratch:/scratch $MY_CONTAINER_NAME
+    docker-compose up -d
     ```
