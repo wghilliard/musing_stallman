@@ -5,13 +5,19 @@ from flask_admin import Admin
 from flask_mongoengine import MongoEngine
 from flask_wtf.csrf import CSRFProtect
 from flask_basicauth import BasicAuth
+from flask_sslify import SSLify
+from werkzeug.contrib.fixers import ProxyFix
 
 from helper import make_celery
 
 import logging as lg
 
+
 app = Flask(__name__)
 app.config.from_object('config')
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+sslify = SSLify(app)
 
 db = MongoEngine(app)
 

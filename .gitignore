@@ -3,5 +3,5 @@ secret_key.py
 secrets.py
 .idea/
 __pycache__/
-
+*.pyc
 

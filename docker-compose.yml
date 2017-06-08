@@ -1,11 +1,20 @@
 version: '2'
 services:
   web:
-    build: .
+    build: ./web
     ports:
      - "5000:5000"
     volumes:
      - /data:/data
-     - /scratch:scratch
-     environment:
+     - /scratch:/scratch
+    environment:
       - DEBUG=FALSE
+
+  nginx:
+    restart: always
+    build: ./nginx/
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - web:web

@@ -1,13 +1,15 @@
 import os
 
-MONGODB_HOST = os.environ.get('MONGODB_HOST', default='localhost')
+PREFERRED_URL_SCHEME = 'https'
+
+MONGODB_HOST = os.environ.get('MONGODB_HOST', default='192.168.1.30')
 MONGODB_PORT = os.environ.get('MONGODB_PORT', default=27017)
 MONGODB_DB = 'musing_stallman'
 
 CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost:5672//'
 CELERY_RESULT_BACKEND = 'rpc://guest:guest@localhost:5672//'
 
-LDAP_HOST = os.environ.get('LDAP_HOST', default='localhost')
+LDAP_HOST = os.environ.get('LDAP_HOST', default='192.168.1.30')
 LDAP_PORT = os.environ.get('LDAP_PORT', default=389)
 LDAP_USER_DOMAIN = 'ou=People,dc=utadl,dc=org'
 LDAP_GROUP_DOMAIN = 'ou=Group,dc=utadl,dc=org'

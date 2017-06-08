@@ -15,7 +15,7 @@ def register():
         user = User(username=form.username.data, email=form.email.data,
                     full_name=form.full_name.data)
         user.save()
-        return redirect(url_for('thanks'))
+        return redirect(url_for('thanks', _external=True, _scheme='https'))
     return render_template('register.html', form=form)
 
 @app.route('/thanks')
