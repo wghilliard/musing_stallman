@@ -35,6 +35,7 @@ def add_user(full_name, username, email, pk=None):
             #     sanity check
             if new_user is not None:
                 new_user.uid_number = get_next_uid_number(ldap_conn)
+                new_user.username = username
             else:
                 lg.error("cannot create new user from existing user (pk={0})".format(pk))
         else:
