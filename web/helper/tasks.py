@@ -22,10 +22,10 @@ def add_user(full_name, username, email, pk=None):
     ldap_conn = get_ldap_connection()
     mongo_conn = get_mongo_connection()
 
-    if not username_open(username, ldap_conn) and len(username) < 31:
+    if not username_open(username, ldap_conn):
         username = username + str(int(uuid.uuid4()))[:3]
-    else:
-        username = "{0}{1}".format(full_name.lower().replace(' ', ''), str(int(uuid.uuid4()))[:3])[:32]
+ #   else:
+ #       username = "{0}{1}".format(full_name.lower().replace(' ', ''), str(int(uuid.uuid4()))[:3])[:32]
 
     username = username[:32]  # max linux username length of 32 characters, super redudant double check for security
 
