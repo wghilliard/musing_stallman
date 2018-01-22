@@ -189,7 +189,6 @@ def username_open(username, ldap_conn):
     ldap_conn.search(LDAP_USER_DOMAIN, '(&(objectclass=account)(uid={0}))'.format(username))
 
     if len(ldap_conn.entries) > 0:
-        print(ldap_conn.entries[0])
         return False
     else:
         return True
