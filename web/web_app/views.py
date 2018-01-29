@@ -77,6 +77,38 @@ class UserView(ModelView):
                                                                                   user_object.uid_number,
                                                                                   user_object.password
                                                                                   ))
+    @action('delete_from_ldap', 'Delete from LDAP', 'Are you sure you want to delete these users?')
+    def action_delete_to_ldap(self, user_pks):
+        from helper.tasks import delete_user
+        for user_pk in user_pks:
+            user_object = User.objects(pk=user_pk).first()
+            if user_object is not None:
+                ok = delete_user(user_object.username) 
+                
+                user_object.has_ldap_account = False
+                user_object.uid_number = None
+                user_object.password = None
+                user_object.save()
+               
+                if ok:
+
+                    flash("{0} has been deleted successfully!".format(user_object.username))
+                else:
+                    flash("{0} was not found on LDAP database.".format(user_object.username, "error"))
+
+
+    @action('delete', 'Delete from LDAP/Storage', 'Are you sure you want to purge these users?')
+    def action_delete(self, user_pks):
+        from helper.tasks import delete_user, delete_user_dirs
+        import inspect
+        for user_pk in user_pks:
+            user_object = User.objects(pk=user_pk).first()
+            if user_object is not None:
+                _ = delete_user(user_object.username) 
+                delete_user_dirs(user_object.username)
+                user_object.delete()
+                flash("{0} has been purged successfully!".format(user_object.username))
+
 
 
 # TODO default auth_token uuid

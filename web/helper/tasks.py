@@ -1,6 +1,6 @@
 from web_app import celery
 from web_app.models import User
-import uuid, os
+import uuid, os, shutil
 from ldap3 import Connection, Server, ALL
 from config import LDAP_USER_DOMAIN, LDAP_GROUP_DOMAIN, DATA_VOLUMES, LDAP_HOST
 
@@ -28,6 +28,7 @@ def add_user(full_name, username, email, pk=None):
  #       username = "{0}{1}".format(full_name.lower().replace(' ', ''), str(int(uuid.uuid4()))[:3])[:32]
 
     username = username[:32]  # max linux username length of 32 characters, super redudant double check for security
+    #TODO: What if username is already at max length and there is duplicate?
 
     try:
         if pk is not None:
@@ -81,6 +82,56 @@ def make_data_dirs(username, uid_number):
             lg.error(e)
         except Exception as e:
             lg.error(e)
+
+    return
+
+# @celery.task()
+def delete_user(username, pk=None):
+    """
+    :param username: bperson
+    :return: success {bool}
+    """
+    print("Attempting to delete {0}".format(username))
+
+    # check for username already in use
+    ldap_conn = get_ldap_connection()
+    mongo_conn = get_mongo_connection()
+
+    if username_open(username, ldap_conn): # Sanity check
+        lg.error("delete_user: user {0} not found on LDAP database".format(username)) 
+        return False
+    
+    ldap_conn.delete('uid={0},{1}'.format(username, LDAP_USER_DOMAIN))
+    lg.info(ldap_conn.result)
+    ldap_conn.delete('cn={0},{1}'.format(username, LDAP_GROUP_DOMAIN))
+    lg.info(ldap_conn.result)
+
+    mongo_conn.close()
+
+    return True
+
+
+# @celery.task()
+def delete_user_dirs(username):
+    # TODO potentially unsafe?
+    for volume in DATA_VOLUMES:
+        try:
+            path = os.path.abspath(os.path.join(volume, username))
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            #UNSAFE OP 
+        except OSError as e:
+            lg.error(e)
+        except Exception as e:
+            lg.error(e)
+    try:
+        path = os.path.abspath(os.path.join('/home/', username))
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+    except OSError as e:
+        lg.error(e)
+    except Exception as e:
+        lg.error(e)
 
     return
 
@@ -142,7 +193,7 @@ def username_open(username, ldap_conn):
     else:
         return True
 
-
+#TODO: Should 'deleted' uid numbers be reused?
 def get_next_uid_number(ldap_conn):
     ldap_conn.search(LDAP_USER_DOMAIN, '(objectclass=posixAccount)', attributes=['uidNumber'])
     return int(max(ldap_conn.entries, key=lambda x: int(x.uidNumber.raw_values[0])).uidNumber.raw_values[0]) + 1
