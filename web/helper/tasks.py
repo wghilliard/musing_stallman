@@ -2,9 +2,13 @@ from web_app import celery
 from web_app.models import User
 import uuid, os, shutil
 from ldap3 import Connection, Server, ALL
+from ldap3.utils.log import set_library_log_detail_level, EXTENDED
 from config import LDAP_USER_DOMAIN, LDAP_GROUP_DOMAIN, DATA_VOLUMES, LDAP_HOST
 
 import logging as lg
+
+lg.basicConfig(level=lg.DEBUG)
+set_library_log_detail_level(EXTENDED)
 
 
 # @celery.task()
@@ -27,7 +31,7 @@ def add_user(full_name, username, email, pk=None):
  #   else:
  #       username = "{0}{1}".format(full_name.lower().replace(' ', ''), str(int(uuid.uuid4()))[:3])[:32]
 
-    username = username[:32]  # max linux username length of 32 characters, super redudant double check for security
+    username = username[:32].lower()  # max linux username length of 32 characters, super redudant double check for security
     #TODO: What if username is already at max length and there is duplicate?
 
     try:
